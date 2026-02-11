@@ -73,11 +73,24 @@
             border: 1px solid #ddd;
             padding: 10px;
             background-color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .diagram img:hover {
+            transform: scale(1.02);
         }
         
         .diagram h3 {
             margin: 10px 0;
             color: #555;
+        }
+        
+        .zoom-hint {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
         }
         
         .download-section {
@@ -96,10 +109,21 @@
             margin: 10px 10px 10px 0;
             border-radius: 5px;
             transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
         }
         
         .download-btn:hover {
             background-color: #0052a3;
+        }
+        
+        .preview-btn {
+            background-color: #28a745;
+        }
+        
+        .preview-btn:hover {
+            background-color: #218838;
         }
         
         footer {
@@ -117,6 +141,79 @@
         
         li {
             margin: 5px 0;
+        }
+        
+        /* Modal/Popup styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            position: relative;
+            margin: 2% auto;
+            padding: 20px;
+            width: 95%;
+            height: 90%;
+            max-width: 1400px;
+        }
+        
+        .modal-content img,
+        .modal-content object {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+        }
+        
+        .zoom-controls button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        
+        .zoom-controls button:hover {
+            background-color: #0052a3;
         }
     </style>
 </head>
@@ -158,7 +255,8 @@
 
         <div class="download-section">
             <h2>Téléchargements</h2>
-            <p>Téléchargez le rapport complet du projet:</p>
+            <p>Téléchargez ou prévisualisez le rapport complet du projet:</p>
+            <button onclick="previewPDF()" class="download-btn preview-btn">👁️ Prévisualiser le Rapport</button>
             <a href="complex_system_simplified.pdf" class="download-btn" download>📄 Télécharger le Rapport (PDF)</a>
         </div>
 
@@ -167,20 +265,23 @@
             
             <div class="diagram">
                 <h3>Diagramme de Cas d'Utilisation</h3>
-                <img src="usecase_diagram.png" alt="Diagramme de cas d'utilisation">
+                <img src="usecase_diagram.png" alt="Diagramme de cas d'utilisation" onclick="openImageModal(this.src)">
                 <p>Vue globale des interactions entre les acteurs (Gestionnaire, Chauffeur, Client, Administrateur) et le système.</p>
+                <p class="zoom-hint">Cliquez sur l'image pour zoomer</p>
             </div>
 
             <div class="diagram">
                 <h3>Architecture Globale du Système</h3>
-                <img src="overall_architecture.svg" alt="Architecture globale">
+                <img src="overall_architecture.svg" alt="Architecture globale" onclick="openImageModal(this.src)">
                 <p>Architecture microservices cloud-native déployée sur Amazon Web Services (AWS).</p>
+                <p class="zoom-hint">Cliquez sur l'image pour zoomer</p>
             </div>
 
             <div class="diagram">
                 <h3>Architecture Détaillée</h3>
-                <img src="detailed_architecture.svg" alt="Architecture détaillée">
+                <img src="detailed_architecture.svg" alt="Architecture détaillée" onclick="openImageModal(this.src)">
                 <p>Décomposition détaillée des services, bases de données, et communication inter-services.</p>
+                <p class="zoom-hint">Cliquez sur l'image pour zoomer</p>
             </div>
         </div>
 
@@ -202,5 +303,108 @@
             <p>Projet de Conception de Systèmes Complexes</p>
         </footer>
     </div>
+
+    <!-- Modal for Image Zoom -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeImageModal()">&times;</span>
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">🔍+</button>
+            <button onclick="zoomOut()">🔍-</button>
+            <button onclick="resetZoom()">⟲</button>
+        </div>
+        <div class="modal-content" id="imageModalContent">
+            <img id="modalImage" src="" alt="Zoom">
+        </div>
+    </div>
+
+    <!-- Modal for PDF Preview -->
+    <div id="pdfModal" class="modal">
+        <span class="close" onclick="closePDFModal()">&times;</span>
+        <div class="modal-content">
+            <iframe id="pdfViewer" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        let currentZoom = 1;
+        
+        // Image Modal Functions
+        function openImageModal(src) {
+            document.getElementById('imageModal').style.display = 'block';
+            document.getElementById('modalImage').src = src;
+            currentZoom = 1;
+            resetZoom();
+        }
+        
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+        
+        function zoomIn() {
+            currentZoom += 0.2;
+            applyZoom();
+        }
+        
+        function zoomOut() {
+            if (currentZoom > 0.4) {
+                currentZoom -= 0.2;
+                applyZoom();
+            }
+        }
+        
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+        
+        function applyZoom() {
+            const img = document.getElementById('modalImage');
+            img.style.transform = `scale(${currentZoom})`;
+            img.style.transformOrigin = 'center center';
+        }
+        
+        // PDF Modal Functions
+        function previewPDF() {
+            document.getElementById('pdfModal').style.display = 'block';
+            document.getElementById('pdfViewer').src = 'complex_system_simplified.pdf';
+        }
+        
+        function closePDFModal() {
+            document.getElementById('pdfModal').style.display = 'none';
+            document.getElementById('pdfViewer').src = '';
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const imageModal = document.getElementById('imageModal');
+            const pdfModal = document.getElementById('pdfModal');
+            if (event.target == imageModal) {
+                closeImageModal();
+            }
+            if (event.target == pdfModal) {
+                closePDFModal();
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('imageModal').style.display === 'block') {
+                if (event.key === 'Escape') {
+                    closeImageModal();
+                } else if (event.key === '+' || event.key === '=') {
+                    zoomIn();
+                } else if (event.key === '-') {
+                    zoomOut();
+                } else if (event.key === '0') {
+                    resetZoom();
+                }
+            }
+            if (document.getElementById('pdfModal').style.display === 'block') {
+                if (event.key === 'Escape') {
+                    closePDFModal();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
