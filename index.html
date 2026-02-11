@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Gestion et d'Optimisation de Livraison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .section {
+            margin: 30px 0;
+        }
+        
+        h2 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .diagram {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .diagram img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: white;
+        }
+        
+        .diagram h3 {
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .download-section {
+            background-color: #e8f4f8;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            margin: 10px 10px 10px 0;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .download-btn:hover {
+            background-color: #0052a3;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Système de Gestion et d'Optimisation de Livraison</h1>
+            <p class="subtitle">Conception de Systèmes Complexes</p>
+            <p class="subtitle">Institut Supérieur d'Informatique - Université de Tunis El Manar</p>
+        </header>
+
+        <div class="info">
+            <p><strong>Réalisé par:</strong> Chiheb ELLEFI, Ibtihel Khmili, Rayen Fehri, Chadha Ammar</p>
+            <p><strong>Année Universitaire:</strong> 2025-2026</p>
+            <p><strong>Niveau:</strong> 2ème Année Ingénieur</p>
+        </div>
+
+        <div class="section">
+            <h2>Description du Projet</h2>
+            <p>
+                Ce projet vise à concevoir et développer un système complet de gestion et d'optimisation 
+                de livraison basé sur une architecture microservices moderne et déployé sur une infrastructure 
+                cloud scalable (AWS). Le système permet aux entreprises de livraison d'automatiser l'affectation 
+                des chauffeurs, de calculer les itinéraires optimaux, et de suivre les livraisons en temps réel.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Caractéristiques Principales</h2>
+            <ul>
+                <li>Architecture microservices cloud-native sur AWS</li>
+                <li>Optimisation intelligente des itinéraires avec OR-Tools de Google</li>
+                <li>Suivi en temps réel des chauffeurs et livraisons</li>
+                <li>Applications web (Angular) et mobile (React Native/Flutter)</li>
+                <li>Scalabilité automatique avec Kubernetes (Amazon EKS)</li>
+                <li>Observabilité complète (ELK Stack, Prometheus, Grafana, Zipkin)</li>
+            </ul>
+        </div>
+
+        <div class="download-section">
+            <h2>Téléchargements</h2>
+            <p>Téléchargez le rapport complet du projet:</p>
+            <a href="complex_system_simplified.pdf" class="download-btn" download>📄 Télécharger le Rapport (PDF)</a>
+        </div>
+
+        <div class="section">
+            <h2>Diagrammes du Système</h2>
+            
+            <div class="diagram">
+                <h3>Diagramme de Cas d'Utilisation</h3>
+                <img src="usecase_diagram.png" alt="Diagramme de cas d'utilisation">
+                <p>Vue globale des interactions entre les acteurs (Gestionnaire, Chauffeur, Client, Administrateur) et le système.</p>
+            </div>
+
+            <div class="diagram">
+                <h3>Architecture Globale du Système</h3>
+                <img src="overall_architecture.svg" alt="Architecture globale">
+                <p>Architecture microservices cloud-native déployée sur Amazon Web Services (AWS).</p>
+            </div>
+
+            <div class="diagram">
+                <h3>Architecture Détaillée</h3>
+                <img src="detailed_architecture.svg" alt="Architecture détaillée">
+                <p>Décomposition détaillée des services, bases de données, et communication inter-services.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Technologies Utilisées</h2>
+            <ul>
+                <li><strong>Backend:</strong> Spring Boot, Spring Cloud (Gateway, Config, Eureka)</li>
+                <li><strong>Optimisation:</strong> Python, OR-Tools</li>
+                <li><strong>Bases de données:</strong> PostgreSQL, TimescaleDB, Redis</li>
+                <li><strong>Infrastructure:</strong> Docker, Kubernetes, Amazon EKS</li>
+                <li><strong>Messaging:</strong> RabbitMQ (Amazon MQ), REST API, gRPC</li>
+                <li><strong>Monitoring:</strong> ELK Stack, Prometheus, Grafana, Zipkin</li>
+                <li><strong>Frontend:</strong> Angular (Web), React Native/Flutter (Mobile)</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>&copy; 2025-2026 - Institut Supérieur d'Informatique</p>
+            <p>Projet de Conception de Systèmes Complexes</p>
+        </footer>
+    </div>
+</body>
+</html>
