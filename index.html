@@ -241,6 +241,26 @@
         .zoom-controls button:hover {
             opacity: 0.9;
         }
+        #imageViewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#imageViewport:active {
+    cursor: grabbing;
+}
+
+#modalImage {
+    transition: transform 0.05s linear;
+    user-select: none;
+    pointer-events: none;
+}
+
 
         @media (max-width: 768px) {
             .container {
@@ -250,6 +270,7 @@
                 font-size: 1.8rem;
             }
         }
+        
     </style>
 </head>
 <body>
@@ -348,9 +369,12 @@
             <button onclick="zoomOut()">🔍-</button>
             <button onclick="resetZoom()">⟲</button>
         </div>
-        <div class="modal-content" id="imageModalContent">
-            <img id="modalImage" src="" alt="Zoom">
-        </div>
+       <div class="modal-content" id="imageModalContent">
+    <div id="imageViewport">
+        <img id="modalImage" src="" alt="Zoom">
+    </div>
+</div>
+
     </div>
 
     <!-- Modal for PDF Preview -->
@@ -361,86 +385,111 @@
         </div>
     </div>
 
-    <script>
-        let currentZoom = 1;
-        
-        // Image Modal Functions
-        function openImageModal(src) {
-            document.getElementById('imageModal').style.display = 'block';
-            document.getElementById('modalImage').src = src;
-            currentZoom = 1;
-            resetZoom();
+   <script>
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    const imageModal = document.getElementById('imageModal');
+    const pdfModal = document.getElementById('pdfModal');
+    const img = document.getElementById('modalImage');
+    const viewport = document.getElementById('imageViewport');
+
+    // ---------- Image Modal ----------
+    function openImageModal(src) {
+        imageModal.style.display = 'block';
+        img.src = src;
+        resetTransform();
+    }
+
+    function closeImageModal() {
+        imageModal.style.display = 'none';
+    }
+
+    function resetTransform() {
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        updateTransform();
+    }
+
+    function updateTransform() {
+        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    // Mouse wheel zoom
+    viewport.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+        scale *= zoomFactor;
+        scale = Math.min(Math.max(scale, 0.2), 10); // limits
+        updateTransform();
+    });
+
+    // Drag to pan
+    viewport.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+    });
+
+    window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        updateTransform();
+    });
+
+    window.addEventListener('mouseup', function () {
+        isDragging = false;
+    });
+
+    // Double click to reset zoom
+    viewport.addEventListener('dblclick', function () {
+        resetTransform();
+    });
+
+    // ---------- PDF Modal ----------
+    function previewPDF() {
+        pdfModal.style.display = 'block';
+        document.getElementById('pdfViewer').src = 'complex_system_simplified.pdf';
+    }
+
+    function closePDFModal() {
+        pdfModal.style.display = 'none';
+        document.getElementById('pdfViewer').src = '';
+    }
+
+    // ---------- Close when clicking outside ----------
+    window.onclick = function(event) {
+        if (event.target === imageModal) {
+            closeImageModal();
         }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
+        if (event.target === pdfModal) {
+            closePDFModal();
         }
-        
-        function zoomIn() {
-            currentZoom += 0.2;
-            applyZoom();
-        }
-        
-        function zoomOut() {
-            if (currentZoom > 0.4) {
-                currentZoom -= 0.2;
-                applyZoom();
-            }
-        }
-        
-        function resetZoom() {
-            currentZoom = 1;
-            applyZoom();
-        }
-        
-        function applyZoom() {
-            const img = document.getElementById('modalImage');
-            img.style.transform = `scale(${currentZoom})`;
-            img.style.transformOrigin = 'center center';
-        }
-        
-        // PDF Modal Functions
-        function previewPDF() {
-            document.getElementById('pdfModal').style.display = 'block';
-            document.getElementById('pdfViewer').src = 'complex_system_simplified.pdf';
-        }
-        
-        function closePDFModal() {
-            document.getElementById('pdfModal').style.display = 'none';
-            document.getElementById('pdfViewer').src = '';
-        }
-        
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            const imageModal = document.getElementById('imageModal');
-            const pdfModal = document.getElementById('pdfModal');
-            if (event.target == imageModal) {
+    };
+
+    // ---------- Keyboard shortcuts ----------
+    document.addEventListener('keydown', function(event) {
+        if (imageModal.style.display === 'block') {
+            if (event.key === 'Escape') {
                 closeImageModal();
+            } else if (event.key === '0') {
+                resetTransform();
             }
-            if (event.target == pdfModal) {
+        }
+
+        if (pdfModal.style.display === 'block') {
+            if (event.key === 'Escape') {
                 closePDFModal();
             }
         }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            if (document.getElementById('imageModal').style.display === 'block') {
-                if (event.key === 'Escape') {
-                    closeImageModal();
-                } else if (event.key === '+' || event.key === '=') {
-                    zoomIn();
-                } else if (event.key === '-') {
-                    zoomOut();
-                } else if (event.key === '0') {
-                    resetZoom();
-                }
-            }
-            if (document.getElementById('pdfModal').style.display === 'block') {
-                if (event.key === 'Escape') {
-                    closePDFModal();
-                }
-            }
-        });
-    </script>
+    });
+</script>
+
 </body>
 </html>
